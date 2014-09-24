@@ -1,0 +1,5 @@
+#Ignore the input file (the script can get it)
+quotes_12.txt
+#Ignore the files that are generated here
+quotes_12.xml
+quotes_12.json
