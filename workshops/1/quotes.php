@@ -88,6 +88,13 @@ class QuotesOutputer {
 		return $this->data;
 	}
 
+	private function getXml () {
+		return $this->quoteDataToXml(
+			$this->getData(),
+			new SimpleXMLElement( '<quotes/>' )
+		)->asXML();
+	}
+
 	public function outputCsv() {
 		header( 'Content-Type:text/html' );
 		echo $this->getCsv();
@@ -100,10 +107,7 @@ class QuotesOutputer {
 
 	public function outputXml() {
 		header( 'Content-Type:text/xml' );
-		echo $this->quoteDataToXml(
-			$this->getData(),
-			new SimpleXMLElement( '<quotes/>' )
-		)->asXML();
+		echo $this->getXml();
 
 	}
 
@@ -111,7 +115,7 @@ class QuotesOutputer {
 		$xslDoc = new DOMDocument();
 		$xslDoc->load( __DIR__ . DIRECTORY_SEPARATOR . 'quotes.xsl' );
 		$xmlDoc = new DOMDocument();
-		$xmlDoc->load( __DIR__ . DIRECTORY_SEPARATOR . 'quotes.xml');
+		$xmlDoc->loadXML( $this->getXml() );
 		$proc = new XSLTProcessor();
 		$proc->importStylesheet($xslDoc);
 		echo $proc->transformToXML($xmlDoc);
@@ -119,6 +123,36 @@ class QuotesOutputer {
 
 	public function outputPhp() {
 		echo serialize( $this->getData() );
+	}
+
+	public function outputSimpleXmlHtml() {
+		$i = new SimpleXMLIterator( $this->getXml() );
+		echo "<!DOCTYPE html>\n<html>\n<head>\n";
+		echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">";
+		echo "<title>Quotes XML -&gt; HTML using XSLT</title>";
+		echo "</head>\n<body>\n<h2>Quote Collection</h2>\n<p>Please see quotes below.</p>";
+		echo "<table border=\"1\">\n";
+		echo "<tr bgcolor=\"#9acd32\">\n";
+		foreach( $this->headings as $heading ) {
+			echo "<th style=\"text-align:left\">$heading</th>";
+		}
+		echo "</tr>\n";
+		foreach( $i as $quote ) {
+			echo "<tr>\n";
+			foreach( $this->headings as $heading ) {
+				$value = $quote->$heading;
+				switch ( $heading ) {
+					case "wpimg":
+						$value = '<img src="' . $value . '" width="110px" height="110px">';
+						break;
+					case "wplink":
+						$value = '<a href="' . $value . '">' . $quote->source .  '</a>';
+				}
+				echo "<td>" . $value . "</td>\n";
+			}
+			echo "</tr>\n";
+		}
+		echo "</table>\n<p>This is some footer!</p>\n</body>\n</html>";
 	}
 
 	/**
