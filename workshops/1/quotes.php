@@ -155,6 +155,14 @@ class QuotesOutputer {
 		echo "</table>\n<p>This is some footer!</p>\n</body>\n</html>";
 	}
 
+	public function outputJsHtml() {
+		echo "<!DOCTYPE html>\n<html>\n<head>\n";
+		echo '<script type="text/javascript" src="./loadXMLDoc.js"></script>';
+		echo "</head>\n<body>\n";
+		echo '<script type="text/javascript" src="./quotes.js"></script>';
+		echo "</body>\n</html>";
+	}
+
 	/**
 	 * @param array $quoteData to be added to the xml
 	 * @param SimpleXMLElement $xml base xml
