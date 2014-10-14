@@ -157,9 +157,9 @@ class QuotesOutputer {
 
 	public function outputJsHtml() {
 		echo "<!DOCTYPE html>\n<html>\n<head>\n";
-		echo '<script type="text/javascript" src="./loadXMLDoc.js"></script>';
+		echo '<script type="text/javascript" src="loadXMLDoc.js"></script>';
 		echo "</head>\n<body>\n";
-		echo '<script type="text/javascript" src="./quotes.js"></script>';
+		echo '<script type="text/javascript" src="quotes.js"></script>';
 		echo "</body>\n</html>";
 	}
 
