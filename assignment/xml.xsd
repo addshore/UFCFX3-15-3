@@ -1,0 +1,41 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="chesschampions">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="champion" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="reign" maxOccurs="unbounded" minOccurs="1">
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:string">
+                                            <xs:attribute type="xs:gYear" name="start"/>
+                                            <xs:attribute type="xs:gYear" name="end"/>
+                                            <xs:attribute type="xs:string" name="type" use="optional"/>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="location" maxOccurs="unbounded" minOccurs="1">
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:string">
+                                            <xs:attribute type="xs:string" name="country"/>
+                                            <xs:attribute type="xs:anyURI" name="country_link" use="optional"/>
+                                            <xs:attribute type="xs:anyURI" name="flag" use="optional"/>
+                                            <xs:attribute type="xs:string" name="historical" use="optional"/>
+                                            <xs:attribute type="xs:anyURI" name="historical_link" use="optional"/>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute type="xs:positiveInteger" name="id"/>
+                        <xs:attribute type="xs:string" name="name"/>
+                        <xs:attribute type="xs:anyURI" name="enwikilink" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
