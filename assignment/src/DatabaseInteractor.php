@@ -150,4 +150,90 @@ final class DatabaseInteractor {
 		return true;
 	}
 
+	/**
+	 * @throws Exception
+	 * @return Champion[]
+	 */
+	public function getChampions() {
+		$db = $this->newPDO();
+		$db->query( 'use atwd_assignment' );
+		$champions = array();
+
+		$championQuery = 'SELECT c.*, GROUP_CONCAT( DISTINCT cl.location_id ) AS locations, GROUP_CONCAT( DISTINCT r.id ) AS reigns
+			FROM champion AS c
+			LEFT JOIN champion_location AS cl ON c.id = cl.champion_id
+			LEFT JOIN reign AS r ON c.id = r.champion_id
+			GROUP BY c.id';
+
+		$championRows = $this->indexRowsById( $this->getRows( $db, $championQuery ) );
+//		$championLocationRows = $this->getRows( $db, 'SELECT * FROM champion_location' );
+		$locationRows = $this->indexRowsById( $this->getRows( $db, 'SELECT * FROM location' ) );
+		$reignRows = $this->indexRowsById( $this->getRows( $db, 'SELECT * FROM reign' ) );
+
+		foreach( $championRows as $championId => $championRow ) {
+
+			$locations = array();
+			foreach( explode( ',', $championRow['locations'] ) as $locationId ) {
+				$locations[$locationId] = new Location(
+					$locationId,
+					$locationRows[$locationId]['country'],
+					$locationRows[$locationId]['country_link'],
+					$locationRows[$locationId]['flag_img'],
+					$locationRows[$locationId]['historical'],
+					$locationRows[$locationId]['historical_link']
+				);
+			}
+
+			$reigns = array();
+			foreach( explode( ',', $championRow['reigns'] ) as $reignId ) {
+				$reigns[$reignId] = new Reign(
+					$reignId,
+					$reignRows[$reignId]['start_year'],
+					$reignRows[$reignId]['end_year'],
+					$reignRows[$reignId]['type']
+				);
+			}
+
+			$champions[$championId] = new Champion(
+				$championId,
+				$championRow['name'],
+				$locations,
+				$reigns,
+				$championRow['enwikilink']
+			);
+		}
+
+		return $champions;
+	}
+
+	/**
+	 * Return all rows in a given table
+	 *
+	 * @param PDO $db
+	 * @param string $query
+	 *
+	 * @return array
+	 * @throws Exception
+	 */
+	private function getRows( PDO $db, $query ) {
+		$championResult = $db->query( $query );
+		if( $championResult === false ) {
+			throw new Exception( implode( ', ', $db->errorInfo() ) . ' : ' . $query );
+		}
+		return $championResult->fetchAll();
+	}
+
+	/**
+	 * @todo this logic might be better in some generic LIST DataObject
+	 * @param array $rows
+	 *
+	 * @return array
+	 */
+	private function indexRowsById( array $rows ) {
+		$newRows = array();
+		foreach( $rows as $row ) {
+			$newRows[$row['id']] = $row;
+		}
+		return $newRows;
+	}
 } 

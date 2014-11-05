@@ -1,5 +1,6 @@
 <?php
-// This script grabs the data for the assignment and imports it into the db!
+// This script grabs the data for the assignment and imports it into the db
+// @ASSIGNMENT 1.1
 
 require_once __DIR__ . '/src/autoload.php';
 
