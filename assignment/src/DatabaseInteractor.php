@@ -5,7 +5,7 @@ final class DatabaseInteractor {
 	/**
 	 * @return PDO linked to default details
 	 */
-	private function getPDO() {
+	private function newPDO() {
 		//TODO these details should be somewhere else
 		return new PDO( 'mysql:host=127.0.0.1', 'root', 'toor' );
 	}
@@ -16,9 +16,9 @@ final class DatabaseInteractor {
 	 */
 	public function create() {
 		$sql = file_get_contents( __DIR__ . '/../sql/create.sql' );
-		$result = $this->getPDO()->exec( $sql );
+		$result = $this->newPDO()->exec( $sql );
 		if( $result === false ) {
-			throw new Exception( $this->getPDO()->errorInfo() );
+			throw new Exception( $this->newPDO()->errorInfo() );
 		}
 		return $result;
 	}
@@ -29,11 +29,125 @@ final class DatabaseInteractor {
 	 */
 	public function drop() {
 		$sql = file_get_contents( __DIR__ . '/../sql/drop.sql' );
-		$result = $this->getPDO()->exec( $sql );
+		$result = $this->newPDO()->exec( $sql );
 		if( $result === false ) {
-			throw new Exception( $this->getPDO()->errorInfo() );
+			throw new Exception( $this->newPDO()->errorInfo() );
 		}
 		return $result;
+	}
+
+	/**
+	 * @param Champion[] $champions
+	 *
+	 * @throws Exception
+	 * @return bool
+	 */
+	public function insertChampions( $champions ) {
+		$db = $this->newPDO();
+		//TODO database name should not be hard coded
+		$db->query( 'use atwd_assignment' );
+
+		$championInsertStatement  = $db->prepare(
+			'INSERT INTO champion ( name, enwikilink ) VALUES (:name, :enwikilink )'
+		);
+		$championSelectStatement = $db->prepare(
+			'SELECT * FROM champion WHERE name = ?'
+		);
+		$reignInsertStatement = $db->prepare(
+			'INSERT INTO reign ( champion_id, start_year, end_year, type ) VALUES (:champion_id, :start_year, :end_year, :type )'
+		);
+		$locationInsertStatement = $db->prepare(
+			'INSERT INTO location
+			( country, country_link, historical, historical_link, flag_img )
+			VALUES (:country, :country_link, :historical, :historical_link, :flag_img )'
+		);
+		$championLocationInsertStatement = $db->prepare(
+			'INSERT INTO champion_location ( champion_id, location_id ) VALUES (:champion_id, :location_id )'
+		);
+
+		foreach( $champions as $champion ) {
+			$queryData = array(
+				':name' => $champion->getName(),
+				':enwikilink' => $champion->getEnwikilink(),
+			);
+			$result = $championInsertStatement->execute( $queryData );
+				if( $result === false ) {
+					throw new Exception( implode( ', ', $championInsertStatement->errorInfo() ) . ': ' . implode( ', ', $queryData ) );
+				}
+
+			$result = $championSelectStatement->execute( array( $champion->getName() ) );
+				if( $result === false ) {
+					throw new Exception( implode( ', ', $championSelectStatement->errorInfo() ) . ': ' . implode( ', ', $queryData ) );
+				}
+			$championId = $championSelectStatement->fetchColumn( 0 );
+
+			foreach( $champion->getReigns() as $reign ) {
+				$queryData = array(
+					':champion_id' => $championId,
+					':start_year' => $reign->getStartYear(),
+					':end_year' => $reign->getEndYear(),
+					':type' => $reign->getType(),
+				);
+				$result = $reignInsertStatement->execute( $queryData );
+				if( $result === false ) {
+					throw new Exception( implode( ', ', $reignInsertStatement->errorInfo() ) . ': ' . implode( ', ', $queryData ) );
+				}
+			}
+
+			$locationIds = array();
+			foreach( $champion->getLocations() as $location ) {
+				$queryData = array(
+					':country' => $location->getCountry(),
+					':country_link' => $location->getCountryLink(),
+					':historical' => $location->getHistorical(),
+					':historical_link' => $location->getHistoricalLink(),
+					':flag_img' => $location->getFlagUrl(),
+				);
+
+				$locationSelectQuery = 'SELECT * FROM location WHERE';
+				foreach( $queryData as $key => $value ) {
+					if( !is_null( $value ) ) {
+						$locationSelectQuery .= ' ' . trim( $key, ':' ) . ' = ' . $db->quote( $value ) . ' AND';
+					} else {
+						$locationSelectQuery .= ' ' . trim( $key, ':' ) . ' IS NULL AND';
+					}
+				}
+				//Remove the final AND
+				$locationSelectQuery = substr( $locationSelectQuery, 0, -4 );
+
+				$result = $db->query( $locationSelectQuery );
+				if( $result === false ) {
+					throw new Exception( implode( ', ', $db->errorInfo() ) . ': ' . implode( ', ', $queryData ) );
+				}
+				$locationId = $result->fetchColumn( 0 );
+				if( $locationId === false ) {
+					$result = $locationInsertStatement->execute( $queryData );
+					if( $result === false ) {
+						throw new Exception( implode( ', ', $locationInsertStatement->errorInfo() ) . ': ' . implode( ', ', $queryData ) );
+					}
+					$result = $db->query( $locationSelectQuery );
+					if( $result === false ) {
+						throw new Exception( implode( ', ', $db->errorInfo() ) . ': ' . implode( ', ', $queryData ) );
+					}
+					$locationId = $result->fetchColumn( 0 );
+				}
+				$locationIds[] = $locationId;
+
+			}
+
+			foreach( $locationIds as $locationId ) {
+				$queryData = array(
+					':champion_id' => $championId,
+					':location_id' => $locationId,
+				);
+				$result = $championLocationInsertStatement->execute( $queryData );
+				if( $result === false ) {
+					throw new Exception( implode( ', ', $db->errorInfo() ) . ': ' . implode( ', ', $queryData ) );
+				}
+			}
+		}
+
+		return true;
 	}
 
 } 

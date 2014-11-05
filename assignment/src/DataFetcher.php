@@ -75,20 +75,31 @@ class DataFetcher {
 			// year
 			$reigns = array();
 			foreach( explode( '<br/>', $dataItem['year'] ) as $reign ) {
+				$reign = trim( $reign );
 				$reignSplit = explode( ' ', $reign );
 				if( count( $reignSplit ) > 1  ) {
-					$reignType = trim( strtolower( $reignSplit[1] ), '()' );
+					$reignType = trim( strtolower( $reignSplit[1] ), "()" );
 				} else {
 					$reignType = null;
 				}
-				$reignDateSplit = explode( '-', $reignSplit[0] );
+				// The below splits 2 different dashes (although they look the same)
+				$reignDateSplit = preg_split( '/(-|–)/', $reignSplit[0] );
 				if( count( $reignDateSplit ) > 1 ) {
 					$end = $reignDateSplit[1];
+					// If we end date is only 2 digit get the century from the start year
+					if( strlen( $end ) === 2 ) {
+						$end = substr( $reignDateSplit[0], 0, 2 ) . $end;
+					}
 				} else {
 					// If no explicit end date then use the start date! (1 year reign)
 					$end = $reignDateSplit[0];
 				}
-				$reigns[] = new Reign( null, $reignDateSplit[0], $end, $reignType );
+				$reigns[] = new Reign(
+					null,
+					trim( $reignDateSplit[0] ),
+					trim( $end ),
+					$reignType
+				);
 			}
 
 			// location
@@ -100,9 +111,9 @@ class DataFetcher {
 				$linkElements = $locationDOM->getElementsByTagName( 'a' );
 
 				if( $locationDOM->getElementsByTagName( 'a' )->length > 1 ) {
-					$historical = $linkElements->item( 1 )->nodeValue;
+					$historical = trim( $linkElements->item( 1 )->nodeValue );
 					//TODO allow there to be no href here
-					$historicalLink = $linkElements->item( 1 )->attributes->getNamedItem('href')->nodeValue;
+					$historicalLink = trim( $linkElements->item( 1 )->attributes->getNamedItem('href')->nodeValue );
 				} else {
 					$historical = null;
 					$historicalLink = null;
@@ -111,11 +122,11 @@ class DataFetcher {
 
 				$locations[] = new Location(
 					null,
-					$linkElements->item( 0 )->nodeValue,
+					trim( $linkElements->item( 0 )->nodeValue ),
 					//TODO allow there to be no href here
-					$linkElements->item( 0 )->attributes->getNamedItem('href')->nodeValue,
+					trim( $linkElements->item( 0 )->attributes->getNamedItem('href')->nodeValue ),
 					//TODO allow there to be no flag img
-					$locationDOM->getElementsByTagName( 'img' )->item( 0 )->attributes->getNamedItem('src')->nodeValue,
+					trim( $locationDOM->getElementsByTagName( 'img' )->item( 0 )->attributes->getNamedItem('src')->nodeValue ),
 					$historical,
 					$historicalLink
 				);
@@ -129,7 +140,7 @@ class DataFetcher {
 				trim( $nameDOM->getElementsByTagName( 'a' )->item( 0 )->nodeValue ),
 				$locations,
 				$reigns,
-				$nameDOM->getElementsByTagName( 'a' )->item( 0 )->attributes->getNamedItem('href')->nodeValue
+				trim( $nameDOM->getElementsByTagName( 'a' )->item( 0 )->attributes->getNamedItem('href')->nodeValue )
 			);
 
 			$data[$dataKey] = $champion;

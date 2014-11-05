@@ -5,4 +5,10 @@ require_once __DIR__ . '/src/autoload.php';
 
 $fetcher = new DataFetcher( 'http://www.cems.uwe.ac.uk/~p-chatterjee/2014-15/modules/atwd1/assignment/chess_world_champions.html' );
 $champions = $fetcher->fetch();
-var_dump( $champions );
+
+$interactor = new DatabaseInteractor();
+$insertionResult = $interactor->insertChampions( $champions );
+
+if( $insertionResult ) {
+	echo "Import Done";
+}
