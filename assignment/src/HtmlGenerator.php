@@ -68,9 +68,12 @@ table, td, th {
 
 		$table = $body->appendChild( $dom->createElement( 'table' ) );
 		$tr1 = $table->appendChild( $dom->createElement( 'tr' ) );
+		$tr1->appendChild( $dom->createElement( 'th', 'Image' ) );
 		$tr1->appendChild( $dom->createElement( 'th', 'Name' ) );
-		$tr1->appendChild( $dom->createElement( 'th', 'Year' ) );
-		$tr1->appendChild( $dom->createElement( 'th', 'Country' ) );
+		$tr1->appendChild( $dom->createElement( 'th', 'Lived in' ) );
+		$tr1->appendChild( $dom->createElement( 'th', 'Dob' ) );
+		$tr1->appendChild( $dom->createElement( 'th', 'Dod' ) );
+		$tr1->appendChild( $dom->createElement( 'th', 'Reigns' ) );
 
 		foreach( $champions as $champion ) {
 			if( array_key_exists( $champion->getEnwikilink(), $extraChampionData ) ) {
@@ -96,9 +99,40 @@ table, td, th {
 		$tr->setAttribute( 'itemscope', '' );
 		$tr->setAttribute( 'itemtype', 'http://schema.org/Person' );
 
+		$this->appendImageColToNode( $dom, $tr, $extraData );
 		$this->appendNameColToNode( $dom, $tr, $champion, $extraData );
-		$this->appendYearColToNode( $dom, $tr, $champion );
-		$this->appendCountryColToNode( $dom, $tr, $champion );
+		$this->appendLivedInColToNode( $dom, $tr, $champion );
+		$this->appendDobColToNode( $dom, $tr, $extraData );
+		$this->appendDodColToNode( $dom, $tr, $extraData );
+		$this->appendReignsColToNode( $dom, $tr, $champion );
+	}
+
+	/**
+	 * Append some ROW DATA to a ROW
+	 *
+	 * @param DOMDocument $dom
+	 * @param DOMNode $tr
+	 * @param null|ExtraChampionData $extraData
+	 */
+	private function appendImageColToNode( DOMDocument $dom, DOMNode $tr, $extraData ) {
+		$imageCol = $tr->appendChild( $dom->createElement( 'td' ) );
+
+		if( !is_null( $extraData ) ) {
+			$commonsImageName = $extraData->getImageLocation();
+			if( !is_null( $commonsImageName ) ) {
+				$commonsImageNameHash = md5( $commonsImageName );
+				$imageLocation = '//upload.wikimedia.org/wikipedia/commons/' .
+					substr( $commonsImageNameHash, 0, 1 ) . '/' .
+					substr( $commonsImageNameHash, 0, 2 ) . '/' .
+					$commonsImageName;
+				/** @var DOMElement $image */
+				$image = $imageCol->appendChild( $dom->createElement( 'img' ) );
+				$image->setAttribute( 'src', htmlentities( $imageLocation ) );
+				$image->setAttribute( 'width', 50 );
+				$image->setAttribute( 'height', 50 );
+				$image->setAttribute( 'itemprop', 'image' );
+			}
+		}
 	}
 
 	/**
@@ -112,23 +146,6 @@ table, td, th {
 	private function appendNameColToNode( DOMDocument $dom, DOMNode $tr, Champion $champion, $extraData ) {
 		$name = $tr->appendChild( $dom->createElement( 'td' ) );
 
-		if( !is_null( $extraData ) ) {
-			$commonsImageName = $extraData->getImageLocation();
-			if( !is_null( $commonsImageName ) ) {
-				$commonsImageNameHash = md5( $commonsImageName );
-				$imageLocation = '//upload.wikimedia.org/wikipedia/commons/' .
-					substr( $commonsImageNameHash, 0, 1 ) . '/' .
-					substr( $commonsImageNameHash, 0, 2 ) . '/' .
-					$commonsImageName;
-				/** @var DOMElement $image */
-				$image = $name->appendChild( $dom->createElement( 'img' ) );
-				$image->setAttribute( 'src', htmlentities( $imageLocation ) );
-				$image->setAttribute( 'width', 50 );
-				$image->setAttribute( 'height', 50 );
-				$image->setAttribute( 'itemprop', 'image' );
-			}
-		}
-
 		if( !is_null( $champion->getEnwikilink() ) ) {
 			/** @var DOMElement $nameLink */
 			$nameLink = $name->appendChild( $dom->createElement( 'a', $champion->getName() ) );
@@ -139,28 +156,41 @@ table, td, th {
 			$name->appendChild( $dom->createTextNode( $champion->getName() ) );
 		}
 
+	}
+
+	/**
+	 * @param DOMDocument $dom
+	 * @param DOMNode $tr
+	 * @param ExtraChampionData $extraData
+	 */
+	private function appendDobColToNode( DOMDocument $dom, DOMNode $tr, $extraData ) {
+		$dobCol = $tr->appendChild( $dom->createElement( 'td' ) );
 		if( !is_null( $extraData ) ) {
 			$dob = $extraData->getDateOfBrith();
+			//If we have both a dob and dod
+			if( $dob !== null ) {
+				$dob = date_parse( ltrim( $dob, '+0' ) );
+				/** @var DOMElement $dobSpan */
+				$dobSpan = $dobCol->appendChild( $dom->createElement( 'span', $dob['day'] . '/' . $dob['month'] . '/' . $dob['year'] ) );
+				$dobSpan->setAttribute( 'itemprop', 'birthDate' );
+			}
+		}
+	}
+
+	/**
+	 * @param DOMDocument $dom
+	 * @param DOMNode $tr
+	 * @param ExtraChampionData $extraData
+	 */
+	private function appendDodColToNode( DOMDocument $dom, DOMNode $tr, $extraData ) {
+		$dodCol = $tr->appendChild( $dom->createElement( 'td' ) );
+		if( !is_null( $extraData ) ) {
 			$dod = $extraData->getDateOfDeath();
 			//If we have both a dob and dod
-			if( $dob !== null && $dod !== null ) {
-				$dob = date_parse( $dob );
-				$dod = date_parse( $dod );
-				// Fix oddities parsing Wikidata date format
-				if( strlen( $dob['year'] ) === 3 ) {
-					$dob['year'] = $dob['year'] + 1000;
-				}
-				if( strlen( $dod['year'] ) === 3 ) {
-					$dod['year'] = $dod['year'] + 1000;
-				}
-
-				$name->appendChild( $dom->createElement( 'br' ) );
-				/** @var DOMElement $dobSpan */
-				$dobSpan = $name->appendChild( $dom->createElement( 'span', $dob['day'] . '/' . $dob['month'] . '/' . $dob['year'] ) );
-				$dobSpan->setAttribute( 'itemprop', 'birthDate' );
-				$name->appendChild( $dom->createTextNode( ' - ' ) );
+			if( $dod !== null ) {
+				$dod = date_parse( ltrim( $dod, '+0' ) );
 				/** @var DOMElement $dodSpan */
-				$dodSpan = $name->appendChild( $dom->createElement( 'span', $dod['day'] . '/' . $dod['month'] . '/' . $dod['year'] ) );
+				$dodSpan = $dodCol->appendChild( $dom->createElement( 'span', $dod['day'] . '/' . $dod['month'] . '/' . $dod['year'] ) );
 				$dodSpan->setAttribute( 'itemprop', 'deathDate' );
 			}
 		}
@@ -174,12 +204,12 @@ table, td, th {
 	 * @param DOMNode $tr
 	 * @param Champion $champion
 	 */
-	private function appendYearColToNode( DOMDocument $dom, DOMNode $tr, Champion $champion ) {
+	private function appendReignsColToNode( DOMDocument $dom, DOMNode $tr, Champion $champion ) {
 		$year = $tr->appendChild( $dom->createElement( 'td' ) );
 		foreach( $champion->getReigns() as $reign ) {
 			$year->appendChild( $dom->createTextNode( $reign->getStartYear() . '-' . $reign->getEndYear() ) );
 			if( !is_null( $reign->getType() ) ) {
-				$year->appendChild( $dom->createTextNode( ' (' . $reign->getType() . ')' ) );
+				$year->appendChild( $dom->createElement( 'small', ' (' . $reign->getType() . ')' ) );
 			}
 			$year->appendChild( $dom->createElement( 'br' ) );
 		}
@@ -194,7 +224,7 @@ table, td, th {
 	 * @param DOMNode $tr
 	 * @param Champion $champion
 	 */
-	private function appendCountryColToNode( DOMDocument $dom, DOMNode $tr, Champion $champion ) {
+	private function appendLivedInColToNode( DOMDocument $dom, DOMNode $tr, Champion $champion ) {
 		$country = $tr->appendChild( $dom->createElement( 'td' ) );
 		foreach( $champion->getLocations() as $location ) {
 			if( !is_null( $location->getFlagUrl() ) ) {
@@ -217,16 +247,17 @@ table, td, th {
 				$country->appendChild( $dom->createTextNode( $location->getCountry() ) );
 			}
 			if( !is_null( $location->getHistorical() ) ) {
-				$country->appendChild( $dom->createTextNode( ' (' ) );
+				$historicalSmall = $country->appendChild( $dom->createElement( 'small' ) );
+				$historicalSmall->appendChild( $dom->createTextNode( ' (' ) );
 				if( !is_null( $location->getHistoricalLink() ) ) {
 					/** @var DOMElement $historicalLink */
-					$historicalLink = $country->appendChild( $dom->createElement( 'a', $location->getHistorical() ) );
+					$historicalLink = $historicalSmall->appendChild( $dom->createElement( 'a', $location->getHistorical() ) );
 					$historicalLink->setAttribute( 'href', $location->getHistoricalLink() );
 					$historicalLink->setAttribute( 'title', $location->getHistorical() );
 				} else {
-					$country->appendChild( $dom->createTextNode( $location->getHistorical() ) );
+					$historicalSmall->appendChild( $dom->createTextNode( $location->getHistorical() ) );
 				}
-				$country->appendChild( $dom->createTextNode( ')' ) );
+				$historicalSmall->appendChild( $dom->createTextNode( ')' ) );
 			}
 			$country->appendChild( $dom->createElement( 'br' ) );
 		}
