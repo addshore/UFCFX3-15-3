@@ -75,7 +75,7 @@ class WikidataInteractor {
 					$imageSnak = $statement->getMainSnak();
 					/** @var StringValue $imageDataValue */
 					$imageDataValue = $imageSnak->getDataValue();
-					$extraData['image'] = $imageDataValue->getValue();
+					$extraData['image'] = str_replace( ' ', '_', $imageDataValue->getValue() ) ;
 				}
 			}
 

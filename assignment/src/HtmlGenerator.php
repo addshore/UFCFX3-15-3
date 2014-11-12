@@ -111,6 +111,24 @@ table, td, th {
 	 */
 	private function appendNameColToNode( DOMDocument $dom, DOMNode $tr, Champion $champion, $extraData ) {
 		$name = $tr->appendChild( $dom->createElement( 'td' ) );
+
+		if( !is_null( $extraData ) ) {
+			$commonsImageName = $extraData->getImageLocation();
+			if( !is_null( $commonsImageName ) ) {
+				$commonsImageNameHash = md5( $commonsImageName );
+				$imageLocation = '//upload.wikimedia.org/wikipedia/commons/' .
+					substr( $commonsImageNameHash, 0, 1 ) . '/' .
+					substr( $commonsImageNameHash, 0, 2 ) . '/' .
+					$commonsImageName;
+				/** @var DOMElement $image */
+				$image = $name->appendChild( $dom->createElement( 'img' ) );
+				$image->setAttribute( 'src', htmlentities( $imageLocation ) );
+				$image->setAttribute( 'width', 50 );
+				$image->setAttribute( 'height', 50 );
+				$image->setAttribute( 'itemprop', 'image' );
+			}
+		}
+
 		if( !is_null( $champion->getEnwikilink() ) ) {
 			/** @var DOMElement $nameLink */
 			$nameLink = $name->appendChild( $dom->createElement( 'a', $champion->getName() ) );
