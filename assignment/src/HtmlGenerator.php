@@ -100,7 +100,7 @@ table, td, th {
 		$tr->setAttribute( 'itemscope', '' );
 		$tr->setAttribute( 'itemtype', 'http://schema.org/Person' );
 
-		$this->appendImageColToNode( $dom, $tr, $extraData );
+		$this->appendImageColToNode( $dom, $tr, $champion, $extraData );
 		$this->appendNameColToNode( $dom, $tr, $champion, $extraData );
 		$this->appendLivedInColToNode( $dom, $tr, $champion );
 		$this->appendDobColToNode( $dom, $tr, $extraData );
@@ -114,9 +114,10 @@ table, td, th {
 	 *
 	 * @param DOMDocument $dom
 	 * @param DOMNode $tr
+	 * @param Champion $champion
 	 * @param null|ExtraChampionData $extraData
 	 */
-	private function appendImageColToNode( DOMDocument $dom, DOMNode $tr, $extraData ) {
+	private function appendImageColToNode( DOMDocument $dom, DOMNode $tr, $champion, $extraData ) {
 		$imageCol = $tr->appendChild( $dom->createElement( 'td' ) );
 
 		if( !is_null( $extraData ) ) {
@@ -127,12 +128,16 @@ table, td, th {
 					substr( $commonsImageNameHash, 0, 1 ) . '/' .
 					substr( $commonsImageNameHash, 0, 2 ) . '/' .
 					$commonsImageName;
+				/** @var DOMElement $imageLink */
+				$imageLink = $imageCol->appendChild( $dom->createElement( 'a' ) );
+				$imageLink->setAttribute( 'href', $imageLocation );
 				/** @var DOMElement $image */
-				$image = $imageCol->appendChild( $dom->createElement( 'img' ) );
+				$image = $imageLink->appendChild( $dom->createElement( 'img' ) );
 				$image->setAttribute( 'src', htmlentities( $imageLocation ) );
 				$image->setAttribute( 'width', 50 );
 				$image->setAttribute( 'height', 50 );
 				$image->setAttribute( 'itemprop', 'image' );
+				$image->setAttribute( 'alt', 'Image of ' . $champion->getName() );
 			}
 		}
 	}
