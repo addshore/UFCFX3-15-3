@@ -1,10 +1,13 @@
 <?php
 
+use DataValues\StringValue;
 use Mediawiki\Api\MediawikiApi;
 use Wikibase\Api\Service\RevisionsGetter;
 use Wikibase\Api\WikibaseFactory;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\SiteLink;
+use Wikibase\DataModel\Snak\PropertyValueSnak;
+use Wikibase\DataModel\Statement\StatementList;
 
 class WikidataInteractor {
 
@@ -24,7 +27,7 @@ class WikidataInteractor {
 	 *
 	 * @param Champion[] $champions
 	 *
-	 * @return Item[]
+	 * @return ExtraChampionData[]
 	 */
 	public function getExtraData( array $champions ) {
 		$enWikiArticles = array();
@@ -44,21 +47,46 @@ class WikidataInteractor {
 		}
 		$revisions = $this->revisionsGetter->getRevisions( $siteLinks );
 
-		$entities = array();
+		$statementListMapping = array();
 		foreach( $revisions->toArray() as $revision ) {
-			/** @var Item $entity */
-			$entity = $revision->getContent()->getNativeData();
+			/** @var Item $item */
+			$item = $revision->getContent()->getNativeData();
 			foreach( $siteLinks as $enWikiLink => $siteLink ) {
 				/** @var SiteLink $siteLink */
-				$entityArticle = $entity->getSiteLinkList()->getBySiteId( 'enwiki' )->getPageName();
+				$entityArticle = $item->getSiteLinkList()->getBySiteId( 'enwiki' )->getPageName();
 				$questionArticle = $siteLink->getPageName();
 				if( $this->normaliseTitleString( $entityArticle ) == $this->normaliseTitleString( $questionArticle ) ) {
-					$entities[ $enWikiLink ] = $entity;
+					$statementList = $item->getStatements()->getBestStatementPerProperty();
+					if( !$statementList->isEmpty() ) {
+						$statementListMapping[ $enWikiLink ] = $item->getStatements()->getBestStatementPerProperty();
+					}
 				}
 			}
 		}
 
-		return $entities;
+		$extraChampionDataMapping = array();
+		foreach( $statementListMapping as $enWikiLink => $statementList ) {
+			$extraData = array();
+
+			/** @var StatementList $statementList */
+			foreach( $statementList->toArray() as $statement ) {
+				if( $statement->getPropertyId()->getNumericId() === 18 ) {
+					/** @var PropertyValueSnak $imageSnak */
+					$imageSnak = $statement->getMainSnak();
+					/** @var StringValue $imageDataValue */
+					$imageDataValue = $imageSnak->getDataValue();
+					$extraData['image'] = $imageDataValue->getValue();
+				}
+			}
+
+			if( !empty( $extraData ) ) {
+				$extraChampionDataMapping[ $enWikiLink ] = new ExtraChampionData(
+					( array_key_exists( 'image', $extraData ) ? $extraData['image'] : null )
+				);
+			}
+		}
+
+		return $extraChampionDataMapping;
 	}
 
 	private function getArticleFromEnWikiLink( $enWikiLink ) {

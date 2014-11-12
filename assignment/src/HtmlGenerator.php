@@ -60,9 +60,9 @@ table, td, th {
 	 * @param DOMDocument $dom
 	 * @param DOMNode $html
 	 * @param Champion[] $champions
-	 * @param Item[] $wikidataItems
+	 * @param ExtraChampionData[] $extraChampionData where keys are the enwikilink url for the champion
 	 */
-	private function appendBodyToNode( DOMDocument $dom, DOMNode $html, $champions, $wikidataItems ) {
+	private function appendBodyToNode( DOMDocument $dom, DOMNode $html, $champions, $extraChampionData ) {
 		$body = $html->appendChild( $dom->createElement( 'body' ) );
 		$body->appendChild( $dom->createElement( 'h3', 'Chess World Champions (1886–2013)' ) );
 
@@ -73,9 +73,12 @@ table, td, th {
 		$tr1->appendChild( $dom->createElement( 'th', 'Country' ) );
 
 		foreach( $champions as $champion ) {
-			//TODO fill $item with the wikidata item if there is one
-			$item = null;
-			$this->appendChampionRowToNode( $dom, $table, $champion, $item );
+			if( array_key_exists( $champion->getEnwikilink(), $extraChampionData ) ) {
+				$extraData = $extraChampionData[ $champion->getEnwikilink() ];
+			} else {
+				$extraData = null;
+			}
+			$this->appendChampionRowToNode( $dom, $table, $champion, $extraData );
 		}
 	}
 
@@ -85,15 +88,15 @@ table, td, th {
 	 * @param DOMDocument $dom
 	 * @param DOMNode $table
 	 * @param Champion $champion
-	 * @param Item|null $item
+	 * @param ExtraChampionData|null $extraData
 	 */
-	private function appendChampionRowToNode( DOMDocument $dom, DOMNode $table, $champion, $item = null ) {
+	private function appendChampionRowToNode( DOMDocument $dom, DOMNode $table, $champion, $extraData = null ) {
 		/** @var DOMElement $tr */
 		$tr = $table->appendChild( $dom->createElement( 'tr' ) );
 		$tr->setAttribute( 'itemscope', '' );
 		$tr->setAttribute( 'itemtype', 'http://schema.org/Person' );
 
-		$this->appendNameColToNode( $dom, $tr, $champion );
+		$this->appendNameColToNode( $dom, $tr, $champion, $extraData );
 		$this->appendYearColToNode( $dom, $tr, $champion );
 		$this->appendCountryColToNode( $dom, $tr, $champion );
 	}
@@ -104,8 +107,9 @@ table, td, th {
 	 * @param DOMDocument $dom
 	 * @param DOMNode $tr
 	 * @param Champion $champion
+	 * @param null|ExtraChampionData $extraData
 	 */
-	private function appendNameColToNode( DOMDocument $dom, DOMNode $tr, Champion $champion ) {
+	private function appendNameColToNode( DOMDocument $dom, DOMNode $tr, Champion $champion, $extraData ) {
 		$name = $tr->appendChild( $dom->createElement( 'td' ) );
 		if( !is_null( $champion->getEnwikilink() ) ) {
 			/** @var DOMElement $nameLink */
