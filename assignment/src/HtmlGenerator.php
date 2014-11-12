@@ -139,6 +139,32 @@ table, td, th {
 			$name->appendChild( $dom->createTextNode( $champion->getName() ) );
 		}
 
+		if( !is_null( $extraData ) ) {
+			$dob = $extraData->getDateOfBrith();
+			$dod = $extraData->getDateOfDeath();
+			//If we have both a dob and dod
+			if( $dob !== null && $dod !== null ) {
+				$dob = date_parse( $dob );
+				$dod = date_parse( $dod );
+				// Fix oddities parsing Wikidata date format
+				if( strlen( $dob['year'] ) === 3 ) {
+					$dob['year'] = $dob['year'] + 1000;
+				}
+				if( strlen( $dod['year'] ) === 3 ) {
+					$dod['year'] = $dod['year'] + 1000;
+				}
+
+				$name->appendChild( $dom->createElement( 'br' ) );
+				/** @var DOMElement $dobSpan */
+				$dobSpan = $name->appendChild( $dom->createElement( 'span', $dob['day'] . '/' . $dob['month'] . '/' . $dob['year'] ) );
+				$dobSpan->setAttribute( 'itemprop', 'birthDate' );
+				$name->appendChild( $dom->createTextNode( ' - ' ) );
+				/** @var DOMElement $dodSpan */
+				$dodSpan = $name->appendChild( $dom->createElement( 'span', $dod['day'] . '/' . $dod['month'] . '/' . $dod['year'] ) );
+				$dodSpan->setAttribute( 'itemprop', 'deathDate' );
+			}
+		}
+
 	}
 
 	/**

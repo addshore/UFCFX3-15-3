@@ -1,6 +1,7 @@
 <?php
 
 use DataValues\StringValue;
+use DataValues\TimeValue;
 use Mediawiki\Api\MediawikiApi;
 use Wikibase\Api\Service\RevisionsGetter;
 use Wikibase\Api\WikibaseFactory;
@@ -70,18 +71,37 @@ class WikidataInteractor {
 
 			/** @var StatementList $statementList */
 			foreach( $statementList->toArray() as $statement ) {
-				if( $statement->getPropertyId()->getNumericId() === 18 ) {
+				$propertyNumber = $statement->getPropertyId()->getNumericId();
+				if( $propertyNumber === 18 ) {
 					/** @var PropertyValueSnak $imageSnak */
 					$imageSnak = $statement->getMainSnak();
 					/** @var StringValue $imageDataValue */
 					$imageDataValue = $imageSnak->getDataValue();
 					$extraData['image'] = str_replace( ' ', '_', $imageDataValue->getValue() ) ;
+				} elseif ( $propertyNumber === 569 ) {
+					/** @var PropertyValueSnak $dateSnak */
+					$dateSnak = $statement->getMainSnak();
+					/** @var TimeValue $timeDataValue */
+					$timeDataValue = $dateSnak->getDataValue();
+					//TODO below should be in constructor
+					$timeFormatter = new \ValueFormatters\TimeFormatter( new \ValueFormatters\FormatterOptions() );
+					$extraData['dob'] = $timeFormatter->format( $timeDataValue );
+				} elseif( $propertyNumber === 570 ) {
+					/** @var PropertyValueSnak $dateSnak */
+					$dateSnak = $statement->getMainSnak();
+					/** @var TimeValue $timeDataValue */
+					$timeDataValue = $dateSnak->getDataValue();
+					//TODO below should be in constructor
+					$timeFormatter = new \ValueFormatters\TimeFormatter( new \ValueFormatters\FormatterOptions() );
+					$extraData['dod'] = $timeFormatter->format( $timeDataValue );
 				}
 			}
 
 			if( !empty( $extraData ) ) {
 				$extraChampionDataMapping[ $enWikiLink ] = new ExtraChampionData(
-					( array_key_exists( 'image', $extraData ) ? $extraData['image'] : null )
+					( array_key_exists( 'image', $extraData ) ? $extraData['image'] : null ),
+					( array_key_exists( 'dob', $extraData ) ? $extraData['dob'] : null ),
+					( array_key_exists( 'dod', $extraData ) ? $extraData['dod'] : null )
 				);
 			}
 		}
