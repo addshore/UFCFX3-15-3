@@ -67,11 +67,14 @@ class WikidataInteractor {
 
 		$extraChampionDataMapping = array();
 		foreach( $statementListMapping as $enWikiLink => $statementList ) {
-			$extraData = array();
+			$extraData = array(
+				'datalinks' => array(),
+			);
 
 			/** @var StatementList $statementList */
 			foreach( $statementList->toArray() as $statement ) {
 				$propertyNumber = $statement->getPropertyId()->getNumericId();
+				//TODO the below should be refactored!
 				if( $propertyNumber === 18 ) {
 					/** @var PropertyValueSnak $imageSnak */
 					$imageSnak = $statement->getMainSnak();
@@ -94,6 +97,30 @@ class WikidataInteractor {
 					//TODO below should be in constructor
 					$timeFormatter = new \ValueFormatters\TimeFormatter( new \ValueFormatters\FormatterOptions() );
 					$extraData['dod'] = $timeFormatter->format( $timeDataValue );
+				} elseif ( $propertyNumber === 214 ) {
+					/** @var PropertyValueSnak $mainSnak */
+					$mainSnak = $statement->getMainSnak();
+					/** @var StringValue $stringDataValue */
+					$stringDataValue = $mainSnak->getDataValue();
+					$extraData['datalinks']['viaf'] = $stringDataValue->getValue();
+				} elseif ( $propertyNumber === 213 ) {
+					/** @var PropertyValueSnak $mainSnak */
+					$mainSnak = $statement->getMainSnak();
+					/** @var StringValue $stringDataValue */
+					$stringDataValue = $mainSnak->getDataValue();
+					$extraData['datalinks']['isni'] = $stringDataValue->getValue();
+				} elseif ( $propertyNumber === 227 ) {
+					/** @var PropertyValueSnak $mainSnak */
+					$mainSnak = $statement->getMainSnak();
+					/** @var StringValue $stringDataValue */
+					$stringDataValue = $mainSnak->getDataValue();
+					$extraData['datalinks']['gnd'] = $stringDataValue->getValue();
+				} elseif ( $propertyNumber === 244 ) {
+					/** @var PropertyValueSnak $mainSnak */
+					$mainSnak = $statement->getMainSnak();
+					/** @var StringValue $stringDataValue */
+					$stringDataValue = $mainSnak->getDataValue();
+					$extraData['datalinks']['lcnaf'] = $stringDataValue->getValue();
 				}
 			}
 
@@ -101,7 +128,8 @@ class WikidataInteractor {
 				$extraChampionDataMapping[ $enWikiLink ] = new ExtraChampionData(
 					( array_key_exists( 'image', $extraData ) ? $extraData['image'] : null ),
 					( array_key_exists( 'dob', $extraData ) ? $extraData['dob'] : null ),
-					( array_key_exists( 'dod', $extraData ) ? $extraData['dod'] : null )
+					( array_key_exists( 'dod', $extraData ) ? $extraData['dod'] : null ),
+					( $extraData['datalinks'] )
 				);
 			}
 		}

@@ -74,6 +74,7 @@ table, td, th {
 		$tr1->appendChild( $dom->createElement( 'th', 'Dob' ) );
 		$tr1->appendChild( $dom->createElement( 'th', 'Dod' ) );
 		$tr1->appendChild( $dom->createElement( 'th', 'Reigns' ) );
+		$tr1->appendChild( $dom->createElement( 'th', 'Data Links' ) );
 
 		foreach( $champions as $champion ) {
 			if( array_key_exists( $champion->getEnwikilink(), $extraChampionData ) ) {
@@ -105,6 +106,7 @@ table, td, th {
 		$this->appendDobColToNode( $dom, $tr, $extraData );
 		$this->appendDodColToNode( $dom, $tr, $extraData );
 		$this->appendReignsColToNode( $dom, $tr, $champion );
+		$this->appendDataLinksColToNode( $dom, $tr, $extraData->getDataLinks() );
 	}
 
 	/**
@@ -214,7 +216,9 @@ table, td, th {
 			$year->appendChild( $dom->createElement( 'br' ) );
 		}
 		//Remove the last br tag
-		$year->removeChild( $year->lastChild );
+		if( count( $champion->getReigns() ) > 0 ) {
+			$year->removeChild( $year->lastChild );
+		}
 	}
 
 	/**
@@ -261,6 +265,41 @@ table, td, th {
 			}
 			$country->appendChild( $dom->createElement( 'br' ) );
 		}
+	}
+
+	/**
+	 * @param DOMDocument $dom
+	 * @param DOMNode $tr
+	 * @param array $dataLinks
+	 */
+	private function appendDataLinksColToNode( DOMDocument $dom, DOMNode $tr, array $dataLinks ) {
+		$dataLinksCol = $tr->appendChild( $dom->createElement( 'td' ) );
+		foreach( $dataLinks as $dataSource => $dataIdentifier ) {
+			/** @var DOMElement $dataLink */
+			$dataLink = $dataLinksCol->appendChild( $dom->createElement( 'a', strtoupper( $dataSource ) ) );
+			$dataLink->setAttribute( 'href', $this->getDataLinkPrefix( $dataSource ) . $dataIdentifier );
+			$dataLink->setAttribute( 'title', $dataSource . ' ' . $dataIdentifier );
+			$dataLink->setAttribute( 'itemprop', 'sameAs' );
+			$dataLinksCol->appendChild( $dom->createTextNode( ', ' ) );
+		}
+		//Remove the last comma
+		if( count( $dataLinks ) > 0 ) {
+			$dataLinksCol->removeChild( $dataLinksCol->lastChild );
+		}
+	}
+
+	private function getDataLinkPrefix( $dataSource ) {
+		switch ( $dataSource ) {
+			case 'viaf':
+				return '//viaf.org/viaf/';
+			case 'isni':
+				return '//http://isni.org/isni/';
+			case 'gnd':
+				return '//d-nb.info/gnd/';
+			case 'lcnaf':
+				return '//lccn.loc.gov/';
+		}
+		throw new Exception( 'Unknown DataLink DataSource' );
 	}
 
 } 
