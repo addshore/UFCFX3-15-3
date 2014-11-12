@@ -9,7 +9,9 @@ CREATE TABLE IF NOT EXISTS atwd_assignment.champion (
   name VARCHAR(45) NOT NULL ,
   enwikilink VARCHAR(150) NULL ,
   PRIMARY KEY (id)
-);
+)
+  DEFAULT CHARACTER SET = utf8
+  COLLATE = utf8_bin;
 
 CREATE UNIQUE INDEX enwikilink_UNIQUE ON atwd_assignment.champion (enwikilink ASC) ;
 
@@ -27,7 +29,9 @@ CREATE TABLE IF NOT EXISTS atwd_assignment.reign (
   REFERENCES atwd_assignment.champion (id )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
-);
+)
+  DEFAULT CHARACTER SET = utf8
+  COLLATE = utf8_bin;
 
 CREATE INDEX fk_reign_champion1_idx ON atwd_assignment.reign (champion_id ASC);
 
@@ -39,7 +43,9 @@ CREATE TABLE IF NOT EXISTS atwd_assignment.location (
   historical_link VARCHAR(150) NULL ,
   flag_img VARCHAR(250) NULL ,
   PRIMARY KEY (id)
-);
+)
+  DEFAULT CHARACTER SET = utf8
+  COLLATE = utf8_bin;
 
 CREATE TABLE IF NOT EXISTS atwd_assignment.champion_location (
   champion_id INT NOT NULL ,
@@ -55,7 +61,9 @@ CREATE TABLE IF NOT EXISTS atwd_assignment.champion_location (
   REFERENCES atwd_assignment.location (id )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
-);
+)
+  DEFAULT CHARACTER SET = utf8
+  COLLATE = utf8_bin;
 
 CREATE INDEX fk_champion_location_champion1_idx ON atwd_assignment.champion_location (champion_id ASC) ;
 

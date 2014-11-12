@@ -29,7 +29,7 @@ class DataFetcher {
 	 * @return DOMDocument
 	 */
 	private function getRawDOM( $rawData ) {
-		$DOM = new DOMDocument;
+		$DOM = new DOMDocument();
 		$DOM->loadHTML( $rawData );
 		return $DOM;
 	}
@@ -111,9 +111,9 @@ class DataFetcher {
 				$linkElements = $locationDOM->getElementsByTagName( 'a' );
 
 				if( $locationDOM->getElementsByTagName( 'a' )->length > 1 ) {
-					$historical = trim( $linkElements->item( 1 )->nodeValue );
+					$historical = utf8_decode( trim( $linkElements->item( 1 )->nodeValue ) );
 					//TODO allow there to be no href here
-					$historicalLink = trim( $linkElements->item( 1 )->attributes->getNamedItem('href')->nodeValue );
+					$historicalLink = utf8_decode(trim( $linkElements->item( 1 )->attributes->getNamedItem('href')->nodeValue ) );
 				} else {
 					$historical = null;
 					$historicalLink = null;
@@ -122,11 +122,11 @@ class DataFetcher {
 
 				$locations[] = new Location(
 					null,
-					trim( $linkElements->item( 0 )->nodeValue ),
+					utf8_decode( trim( $linkElements->item( 0 )->nodeValue ) ),
 					//TODO allow there to be no href here
-					trim( $linkElements->item( 0 )->attributes->getNamedItem('href')->nodeValue ),
+					utf8_decode( trim( $linkElements->item( 0 )->attributes->getNamedItem('href')->nodeValue ) ),
 					//TODO allow there to be no flag img
-					trim( $locationDOM->getElementsByTagName( 'img' )->item( 0 )->attributes->getNamedItem('src')->nodeValue ),
+					utf8_decode( trim( $locationDOM->getElementsByTagName( 'img' )->item( 0 )->attributes->getNamedItem('src')->nodeValue ) ),
 					$historical,
 					$historicalLink
 				);
@@ -137,10 +137,10 @@ class DataFetcher {
 			$nameDOM->loadHTML( $dataItem['name'] );
 			$champion = new Champion(
 				null,
-				trim( $nameDOM->getElementsByTagName( 'a' )->item( 0 )->nodeValue ),
+				utf8_decode( trim( $nameDOM->getElementsByTagName( 'a' )->item( 0 )->nodeValue ) ),
 				$locations,
 				$reigns,
-				trim( $nameDOM->getElementsByTagName( 'a' )->item( 0 )->attributes->getNamedItem('href')->nodeValue )
+				utf8_decode( trim( $nameDOM->getElementsByTagName( 'a' )->item( 0 )->attributes->getNamedItem('href')->nodeValue ) )
 			);
 
 			$data[$dataKey] = $champion;

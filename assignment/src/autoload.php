@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * Settings that should be loaded by everything
+ */
+mb_internal_encoding("UTF-8");
+ini_set("default_charset", 'utf-8');
+
+/**
  * Recursively include all src files once while keeping global scope clean
  */
 call_user_func( function () {
