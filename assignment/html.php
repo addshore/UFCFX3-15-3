@@ -6,7 +6,12 @@ require_once __DIR__ . '/src/autoload.php';
 
 $interactor = new DatabaseInteractor();
 $generator = new HtmlGenerator();
+$wikidata = new WikidataInteractor();
+
+$champions = $interactor->getChampions();
+$wikidataItems = $wikidata->getExtraData( $champions );
 
 echo $generator->generate(
-	$interactor->getChampions()
+	$champions,
+	$wikidataItems
 );

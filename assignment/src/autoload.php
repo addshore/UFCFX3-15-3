@@ -15,3 +15,6 @@ call_user_func( function () {
 		include_once $fileLocation;
 	}
 } );
+
+// Load the composer autoload file
+require_once dirname( __DIR__ ) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';

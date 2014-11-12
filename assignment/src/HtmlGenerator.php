@@ -1,21 +1,28 @@
 <?php
 
+use Wikibase\DataModel\Entity\Item;
+
 class HtmlGenerator {
 
 	/**
 	 * @param Champion[] $champions
+	 * @param Item[] $wikidataItems
 	 *
 	 * @return string
+	 *
+	 * @todo make sure of $wikidataItems
 	 */
-	public function generate( array $champions ) {
+	public function generate( array $champions, array $wikidataItems = array() ) {
 		$dom = new DOMDocument();
 
 		$html = $dom->appendChild( $dom->createElement( 'html' ) );
+		/** @var DOMElement $html */
 		$html->setAttribute( 'lang', 'en' );
 
 		$head = $html->appendChild( $dom->createElement( 'head' ) );
 
 		$charset = $head->appendChild( $dom->createElement( 'meta' ) );
+		/** @var DOMElement $charset */
 		$charset->setAttribute( 'charset',  'utf-8' );
 
 		$head->appendChild( $dom->createElement( 'title', 'Chess World Champions') );
