@@ -1,16 +1,13 @@
 <?php
 
-use Wikibase\DataModel\Entity\Item;
-
-class HtmlGenerator {
+class HtmlGenerator implements OutputGenerator {
 
 	/**
 	 * @param Champion[] $champions
-	 * @param Item[] $wikidataItems
+	 * @param ExtraChampionData[] $wikidataItems with keys pointing to the enwikilink
+	 *                            May not include all champions that are in $champions
 	 *
 	 * @return string
-	 *
-	 * @todo make sure of $wikidataItems
 	 */
 	public function generate( array $champions, array $wikidataItems = array() ) {
 		$dom = new DOMDocument();

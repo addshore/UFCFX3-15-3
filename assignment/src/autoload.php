@@ -7,6 +7,11 @@ mb_internal_encoding("UTF-8");
 ini_set("default_charset", 'utf-8');
 
 /**
+ * Require interfaces before other classes
+ */
+require_once __DIR__ . '/Generators/OutputGenerator.php';
+
+/**
  * Recursively include all src files once while keeping global scope clean
  */
 call_user_func( function () {
@@ -24,6 +29,3 @@ call_user_func( function () {
 
 // Load the composer autoload file
 require_once dirname( __DIR__ ) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
-
-// Load the libs
-require_once dirname( __DIR__ ) . DIRECTORY_SEPARATOR . 'lib/php-json-ld/jsonld.php';

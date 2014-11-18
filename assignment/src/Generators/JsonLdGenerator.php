@@ -1,13 +1,15 @@
 <?php
 
-class JsonLdGenerator {
+class JsonLdGenerator implements OutputGenerator {
 
 	/**
 	 * @param Champion[] $champions
+	 * @param ExtraChampionData[] $wikidataItems with keys pointing to the enwikilink
+	 *                            May not include all champions that are in $champions
 	 *
 	 * @return string
 	 */
-	public function generate( array $champions ) {
+	public function generate( array $champions, array $wikidataItems = array() ) {
 		$outArray = array();
 
 		foreach( $champions as $champion ) {
