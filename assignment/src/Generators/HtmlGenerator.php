@@ -17,6 +17,9 @@ class HtmlGenerator implements OutputGenerator {
 	 * @param bool $rdfa should the html include rdfa stuff?
 	 */
 	public function __construct( $microdata = false, $rdfa = false ) {
+		if( !is_bool( $microdata ) || !is_bool( $rdfa ) ) {
+			throw new InvalidArgumentException( __CLASS__ . ' $microdata and $rdfa must be bools' );
+		}
 		$this->microdata = $microdata;
 		$this->rdfa = $rdfa;
 	}
@@ -59,7 +62,7 @@ class HtmlGenerator implements OutputGenerator {
 		/** @var DOMElement $charset */
 		$charset->setAttribute( 'charset',  'utf-8' );
 
-		$head->appendChild( $dom->createElement( 'title', 'Chess World Champions') );
+		$head->appendChild( $dom->createElement( 'title', 'Chess World Champions' ) );
 		$head->appendChild( $dom->createElement( 'style', 'table {
     border-collapse: collapse;
 }
@@ -118,6 +121,10 @@ table, td, th {
 			$tr->setAttribute( 'itemscope', '' );
 			$tr->setAttribute( 'itemtype', 'http://schema.org/Person' );
 		}
+		if( $this->rdfa ) {
+			$tr->setAttribute( 'vocab', 'http://schema.org/' );
+			$tr->setAttribute( 'typeof', 'Person' );
+		}
 
 		$this->appendImageColToNode( $dom, $tr, $champion, $extraData );
 		$this->appendNameColToNode( $dom, $tr, $champion, $extraData );
@@ -159,6 +166,9 @@ table, td, th {
 				if( $this->microdata ) {
 					$image->setAttribute( 'itemprop', 'image' );
 				}
+				if( $this->rdfa ) {
+					$image->setAttribute( 'property', 'image' );
+				}
 			}
 		}
 	}
@@ -181,6 +191,9 @@ table, td, th {
 			$nameLink->setAttribute( 'title', $champion->getName() );
 			if( $this->microdata ) {
 				$nameLink->setAttribute( 'itemprop', 'name' );
+			}
+			if( $this->rdfa ) {
+				$nameLink->setAttribute( 'property', 'name' );
 			}
 		} else {
 			$name->appendChild( $dom->createTextNode( $champion->getName() ) );
@@ -205,6 +218,9 @@ table, td, th {
 				if( $this->microdata ) {
 					$dobSpan->setAttribute( 'itemprop', 'birthDate' );
 				}
+				if( $this->rdfa ) {
+					$dobSpan->setAttribute( 'property', 'birthDate' );
+				}
 			}
 		}
 	}
@@ -225,6 +241,9 @@ table, td, th {
 				$dodSpan = $dodCol->appendChild( $dom->createElement( 'span', $dod['day'] . '/' . $dod['month'] . '/' . $dod['year'] ) );
 				if( $this->microdata ) {
 					$dodSpan->setAttribute( 'itemprop', 'deathDate' );
+				}
+				if( $this->rdfa ) {
+					$dodSpan->setAttribute( 'property', 'deathDate' );
 				}
 			}
 		}
@@ -313,6 +332,9 @@ table, td, th {
 			$dataLink->setAttribute( 'title', $dataSource . ' ' . $dataIdentifier );
 			if( $this->microdata ) {
 				$dataLink->setAttribute( 'itemprop', 'sameAs' );
+			}
+			if( $this->rdfa ) {
+				$dataLink->setAttribute( 'property', 'sameAs' );
 			}
 			$dataLinksCol->appendChild( $dom->createTextNode( ', ' ) );
 		}

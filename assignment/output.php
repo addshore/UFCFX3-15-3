@@ -33,8 +33,10 @@ switch ( $format ) {
 if( isset( $generator ) ) {
 	$dbInteractor = new DatabaseInteractor();
 	$wikidataInteractor = new WikidataInteractor();
+
+	$champions = $dbInteractor->getChampions();
 	echo $generator->generate(
-		$dbInteractor->getChampions(),
+		$champions,
 		$wikidataInteractor->getExtraData( $champions )
 	);
 } else {
