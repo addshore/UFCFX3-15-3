@@ -4,13 +4,13 @@ class XmlGenerator implements OutputGenerator {
 
 	/**
 	 * @param Champion[] $champions
-	 * @param ExtraChampionData[] $wikidataItems with keys pointing to the enwikilink
+	 * @param ExtraChampionData[] $extraChampionData with keys pointing to the enwikilink
 	 *                            May not include all champions that are in $champions
 	 *
 	 * @return string
 	 */
-	public function generate( array $champions, array $wikidataItems = array() ) {
-		//TODO use $wikidataItems
+	public function generate( array $champions, array $extraChampionData = array() ) {
+		//TODO use $extraChampionData
 		$xml = new SimpleXMLElement( '<chesschampions/>' );
 		foreach( $champions as $champion ) {
 			$championXml = $xml->addChild( 'champion' );

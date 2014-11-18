@@ -26,16 +26,16 @@ class HtmlGenerator implements OutputGenerator {
 
 	/**
 	 * @param Champion[] $champions
-	 * @param ExtraChampionData[] $wikidataItems with keys pointing to the enwikilink
+	 * @param ExtraChampionData[] $extraChampionData with keys pointing to the enwikilink
 	 *                            May not include all champions that are in $champions
 	 *
 	 * @return string
 	 */
-	public function generate( array $champions, array $wikidataItems = array() ) {
+	public function generate( array $champions, array $extraChampionData = array() ) {
 		$dom = new DOMDocument();
 		$dom->formatOutput = true;
 
-		$this->appendHtmlToDom( $dom, $champions, $wikidataItems );
+		$this->appendHtmlToDom( $dom, $champions, $extraChampionData );
 
 		return '<!DOCTYPE html>' . "\n" . $dom->saveHTML();
 	}
@@ -43,13 +43,13 @@ class HtmlGenerator implements OutputGenerator {
 	/**
 	 * Append HTML to the DOM
 	 */
-	private function appendHtmlToDom( DOMDocument $dom, array $champions, array $wikidataItems ) {
+	private function appendHtmlToDom( DOMDocument $dom, array $champions, array $extraChampionData ) {
 		$html = $dom->appendChild( $dom->createElement( 'html' ) );
 		/** @var DOMElement $html */
 		$html->setAttribute( 'lang', 'en' );
 
 		$this->appendHeadToNode( $dom, $html );
-		$this->appendBodyToNode( $dom, $html, $champions, $wikidataItems );
+		$this->appendBodyToNode( $dom, $html, $champions, $extraChampionData );
 	}
 
 	/**
