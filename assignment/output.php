@@ -36,7 +36,10 @@ switch ( $format ) {
 		break;
 
 	case 'jsonld':
-		echo "TODO";
+		$generator = new JsonLdGenerator();
+		echo $generator->generate(
+			$champions
+		);
 		break;
 
 	default:

@@ -24,3 +24,6 @@ call_user_func( function () {
 
 // Load the composer autoload file
 require_once dirname( __DIR__ ) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+
+// Load the libs
+require_once dirname( __DIR__ ) . DIRECTORY_SEPARATOR . 'lib/php-json-ld/jsonld.php';
