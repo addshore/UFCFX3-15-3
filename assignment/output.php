@@ -6,7 +6,7 @@ require_once __DIR__ . '/src/autoload.php';
 // Get the format we want
 $format = null;
 if( array_key_exists( 'format', $_GET ) ) {
-	$format = $_GET['format'];
+	$format = strtolower( $_GET['format'] );
 }
 
 // Get the right generator for the format
@@ -19,12 +19,14 @@ switch ( $format ) {
 		$generator = new HtmlGenerator();
 		break;
 	case 'microdata':
+	case 'micro':
 		$generator = new HtmlGenerator( true );
 		break;
 	case 'rdfa':
 		$generator = new HtmlGenerator( false, true );
 		break;
 	case 'jsonld':
+	case 'json-ld':
 		$generator = new JsonLdGenerator();
 		break;
 }
