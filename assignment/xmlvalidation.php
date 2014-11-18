@@ -4,10 +4,13 @@
 require_once __DIR__ . '/src/autoload.php';
 
 $interactor = new DatabaseInteractor();
+$wikidataInteractor = new WikidataInteractor();
 $generator = new XmlGenerator();
 
+$champions = $interactor->getChampions();
 $xml = $generator->generate(
-	$interactor->getChampions()
+	$champions,
+	$wikidataInteractor->getExtraData( $champions )
 );
 
 $dom = new DOMDocument;

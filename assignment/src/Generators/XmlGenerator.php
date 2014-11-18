@@ -10,13 +10,29 @@ class XmlGenerator implements OutputGenerator {
 	 * @return string
 	 */
 	public function generate( array $champions, array $extraChampionData = array() ) {
-		//TODO use $extraChampionData
 		$xml = new SimpleXMLElement( '<chesschampions/>' );
 		foreach( $champions as $champion ) {
 			$championXml = $xml->addChild( 'champion' );
 			$championXml->addAttribute( 'id', $champion->getId() );
 			$championXml->addAttribute( 'name', $champion->getName() );
 			$championXml->addAttribute( 'enwikilink', $champion->getEnwikilink() );
+
+			if( array_key_exists( $champion->getEnwikilink(), $extraChampionData ) ) {
+				$extraData = $extraChampionData[$champion->getEnwikilink()];
+				if( !is_null( $extraData->getImageLocation() ) ) {
+					$championXml->addAttribute( 'image', $extraData->getImageLocation() );
+				}
+				if( !is_null( $extraData->getDateOfBrith() ) ) {
+					$championXml->addAttribute( 'birthDate', $extraData->getDateOfBrith() );
+				}
+				if( !is_null( $extraData->getDateOfDeath() ) ) {
+					$championXml->addAttribute( 'deathDate', $extraData->getDateOfDeath() );
+				}
+				foreach( $extraData->getDataLinks() as $dataSource => $dataIdentifier ) {
+					$sameAs = $championXml->addChild( 'sameAs' );
+					$sameAs->addAttribute( 'uri', $this->getDataLinkPrefix( $dataSource ) . $dataIdentifier );
+				}
+			}
 
 			foreach( $champion->getReigns() as $reign ) {
 				$reignXml = $championXml->addChild( 'reign' );
@@ -51,6 +67,26 @@ class XmlGenerator implements OutputGenerator {
 		$dom->loadXML( $xml->asXML() );
 		$dom->formatOutput = TRUE;
 		return $dom->saveXml();
+	}
+
+	/**
+	 * @param string $dataSource identifiers for the datasource
+	 *
+	 * @return string prefix url for the identifier
+	 * @throws Exception if datasource identifier is not known here
+	 */
+	private function getDataLinkPrefix( $dataSource ) {
+		switch ( $dataSource ) {
+			case 'viaf':
+				return '//viaf.org/viaf/';
+			case 'isni':
+				return '//http://isni.org/isni/';
+			case 'gnd':
+				return '//d-nb.info/gnd/';
+			case 'lcnaf':
+				return '//lccn.loc.gov/';
+		}
+		throw new Exception( 'Unknown DataLink DataSource' );
 	}
 
 } 

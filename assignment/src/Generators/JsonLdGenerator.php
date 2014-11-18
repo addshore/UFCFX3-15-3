@@ -20,9 +20,15 @@ class JsonLdGenerator implements OutputGenerator {
 			);
 			if( array_key_exists( $champion->getEnwikilink(), $extraChampionData ) ) {
 				$extraData = $extraChampionData[$champion->getEnwikilink()];
-				$championArray['image'] = $extraData->getImageLocation();
-				$championArray['birthDate'] = $extraData->getDateOfBrith();
-				$championArray['deathDate'] = $extraData->getDateOfDeath();
+				if( !is_null( $extraData->getImageLocation() ) ) {
+					$championArray['image'] = $extraData->getImageLocation();
+				}
+				if( !is_null( $extraData->getDateOfBrith() ) ) {
+					$championArray['birthDate'] = $extraData->getDateOfBrith();
+				}
+				if( !is_null( $extraData->getDateOfDeath() ) ) {
+					$championArray['deathDate'] = $extraData->getDateOfDeath();
+				}
 				$sameAsArray = array();
 				foreach( $extraData->getDataLinks() as $dataSource => $dataIdentifier ) {
 					$sameAsArray[] = $this->getDataLinkPrefix( $dataSource ) . $dataIdentifier;

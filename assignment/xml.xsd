@@ -5,6 +5,15 @@
                 <xs:element name="champion" maxOccurs="unbounded" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>
+                            <xs:element name="sameAs" maxOccurs="unbounded" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:string">
+                                            <xs:attribute type="xs:string" name="uri"/>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
                             <xs:element name="reign" maxOccurs="unbounded" minOccurs="1">
                                 <xs:complexType>
                                     <xs:simpleContent>
@@ -33,6 +42,9 @@
                         <xs:attribute type="xs:positiveInteger" name="id"/>
                         <xs:attribute type="xs:string" name="name"/>
                         <xs:attribute type="xs:anyURI" name="enwikilink" use="optional"/>
+                        <xs:attribute type="xs:anyURI" name="image" use="optional"/>
+                        <xs:attribute type="xs:string" name="birthDate" use="optional"/>
+                        <xs:attribute type="xs:string" name="deathDate" use="optional"/>
                     </xs:complexType>
                 </xs:element>
             </xs:sequence>
