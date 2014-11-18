@@ -3,6 +3,25 @@
 class HtmlGenerator implements OutputGenerator {
 
 	/**
+	 * @var bool
+	 */
+	private $microdata;
+
+	/**
+	 * @var bool
+	 */
+	private $rdfa;
+
+	/**
+	 * @param bool $microdata should the html include microdata?
+	 * @param bool $rdfa should the html include rdfa stuff?
+	 */
+	public function __construct( $microdata = false, $rdfa = false ) {
+		$this->microdata = $microdata;
+		$this->rdfa = $rdfa;
+	}
+
+	/**
 	 * @param Champion[] $champions
 	 * @param ExtraChampionData[] $wikidataItems with keys pointing to the enwikilink
 	 *                            May not include all champions that are in $champions
@@ -94,8 +113,11 @@ table, td, th {
 	private function appendChampionRowToNode( DOMDocument $dom, DOMNode $table, $champion, $extraData = null ) {
 		/** @var DOMElement $tr */
 		$tr = $table->appendChild( $dom->createElement( 'tr' ) );
-		$tr->setAttribute( 'itemscope', '' );
-		$tr->setAttribute( 'itemtype', 'http://schema.org/Person' );
+
+		if( $this->microdata ) {
+			$tr->setAttribute( 'itemscope', '' );
+			$tr->setAttribute( 'itemtype', 'http://schema.org/Person' );
+		}
 
 		$this->appendImageColToNode( $dom, $tr, $champion, $extraData );
 		$this->appendNameColToNode( $dom, $tr, $champion, $extraData );
@@ -133,8 +155,10 @@ table, td, th {
 				$image->setAttribute( 'src', htmlentities( $imageLocation ) );
 				$image->setAttribute( 'width', 50 );
 				$image->setAttribute( 'height', 50 );
-				$image->setAttribute( 'itemprop', 'image' );
 				$image->setAttribute( 'alt', 'Image of ' . $champion->getName() );
+				if( $this->microdata ) {
+					$image->setAttribute( 'itemprop', 'image' );
+				}
 			}
 		}
 	}
@@ -155,7 +179,9 @@ table, td, th {
 			$nameLink = $name->appendChild( $dom->createElement( 'a', $champion->getName() ) );
 			$nameLink->setAttribute( 'href', $champion->getEnwikilink() );
 			$nameLink->setAttribute( 'title', $champion->getName() );
-			$nameLink->setAttribute( 'itemprop', 'name' );
+			if( $this->microdata ) {
+				$nameLink->setAttribute( 'itemprop', 'name' );
+			}
 		} else {
 			$name->appendChild( $dom->createTextNode( $champion->getName() ) );
 		}
@@ -176,7 +202,9 @@ table, td, th {
 				$dob = date_parse( ltrim( $dob, '+0' ) );
 				/** @var DOMElement $dobSpan */
 				$dobSpan = $dobCol->appendChild( $dom->createElement( 'span', $dob['day'] . '/' . $dob['month'] . '/' . $dob['year'] ) );
-				$dobSpan->setAttribute( 'itemprop', 'birthDate' );
+				if( $this->microdata ) {
+					$dobSpan->setAttribute( 'itemprop', 'birthDate' );
+				}
 			}
 		}
 	}
@@ -195,7 +223,9 @@ table, td, th {
 				$dod = date_parse( ltrim( $dod, '+0' ) );
 				/** @var DOMElement $dodSpan */
 				$dodSpan = $dodCol->appendChild( $dom->createElement( 'span', $dod['day'] . '/' . $dod['month'] . '/' . $dod['year'] ) );
-				$dodSpan->setAttribute( 'itemprop', 'deathDate' );
+				if( $this->microdata ) {
+					$dodSpan->setAttribute( 'itemprop', 'deathDate' );
+				}
 			}
 		}
 
@@ -281,7 +311,9 @@ table, td, th {
 			$dataLink = $dataLinksCol->appendChild( $dom->createElement( 'a', strtoupper( $dataSource ) ) );
 			$dataLink->setAttribute( 'href', $this->getDataLinkPrefix( $dataSource ) . $dataIdentifier );
 			$dataLink->setAttribute( 'title', $dataSource . ' ' . $dataIdentifier );
-			$dataLink->setAttribute( 'itemprop', 'sameAs' );
+			if( $this->microdata ) {
+				$dataLink->setAttribute( 'itemprop', 'sameAs' );
+			}
 			$dataLinksCol->appendChild( $dom->createTextNode( ', ' ) );
 		}
 		//Remove the last comma
