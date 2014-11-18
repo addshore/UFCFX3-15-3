@@ -27,6 +27,7 @@ switch ( $format ) {
 		break;
 	case 'jsonld':
 	case 'json-ld':
+		header( 'Content-Type:text/json' );
 		$generator = new JsonLdGenerator();
 		break;
 }
