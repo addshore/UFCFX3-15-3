@@ -23,7 +23,7 @@ class Reign {
 	private $type;
 
 	/**
-	 * @param null|int $id
+	 * @param int|null $id is is null if not in the database
 	 * @param int $startYear
 	 * @param int|null $endYear
 	 * @param string|null $type

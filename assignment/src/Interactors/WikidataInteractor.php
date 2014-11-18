@@ -10,6 +10,12 @@ use Wikibase\DataModel\SiteLink;
 use Wikibase\DataModel\Snak\PropertyValueSnak;
 use Wikibase\DataModel\Statement\StatementList;
 
+/**
+ * Class WikidataInteractor
+ *
+ * Allows access to extra data from http://www.wikidata.org
+ * This uses the addwiki/wikibase-api library written by me!
+ */
 class WikidataInteractor {
 
 	/**
@@ -65,6 +71,8 @@ class WikidataInteractor {
 			}
 		}
 
+		$timeFormatter = new \ValueFormatters\TimeFormatter( new \ValueFormatters\FormatterOptions() );
+
 		$extraChampionDataMapping = array();
 		foreach( $statementListMapping as $enWikiLink => $statementList ) {
 			$extraData = array(
@@ -74,7 +82,6 @@ class WikidataInteractor {
 			/** @var StatementList $statementList */
 			foreach( $statementList->toArray() as $statement ) {
 				$propertyNumber = $statement->getPropertyId()->getNumericId();
-				//TODO the below should be refactored!
 				if( $propertyNumber === 18 ) {
 					/** @var PropertyValueSnak $imageSnak */
 					$imageSnak = $statement->getMainSnak();
@@ -86,16 +93,12 @@ class WikidataInteractor {
 					$dateSnak = $statement->getMainSnak();
 					/** @var TimeValue $timeDataValue */
 					$timeDataValue = $dateSnak->getDataValue();
-					//TODO below should be in constructor
-					$timeFormatter = new \ValueFormatters\TimeFormatter( new \ValueFormatters\FormatterOptions() );
 					$extraData['dob'] = $timeFormatter->format( $timeDataValue );
 				} elseif( $propertyNumber === 570 ) {
 					/** @var PropertyValueSnak $dateSnak */
 					$dateSnak = $statement->getMainSnak();
 					/** @var TimeValue $timeDataValue */
 					$timeDataValue = $dateSnak->getDataValue();
-					//TODO below should be in constructor
-					$timeFormatter = new \ValueFormatters\TimeFormatter( new \ValueFormatters\FormatterOptions() );
 					$extraData['dod'] = $timeFormatter->format( $timeDataValue );
 				} elseif ( $propertyNumber === 214 ) {
 					/** @var PropertyValueSnak $mainSnak */
@@ -137,6 +140,11 @@ class WikidataInteractor {
 		return $extraChampionDataMapping;
 	}
 
+	/**
+	 * @param string $enWikiLink link in format (.*)(en\.wikipedia\.org\/wiki\/)(.*)
+	 *
+	 * @return string
+	 */
 	private function getArticleFromEnWikiLink( $enWikiLink ) {
 		$split = explode( 'en.wikipedia.org/wiki/', $enWikiLink );
 		if( count( $split ) < 2 ) {
@@ -145,6 +153,11 @@ class WikidataInteractor {
 		return $split[1];
 	}
 
+	/**
+	 * @param string $string
+	 *
+	 * @return string
+	 */
 	private function normaliseTitleString( $string ) {
 		return strtolower( str_replace( '_', ' ', $string ) );
 	}

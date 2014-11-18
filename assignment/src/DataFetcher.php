@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Class DataFetcher
+ *
+ * Gets the original data from the dataLocation url
+ * Must be in expected format
+ */
 class DataFetcher {
 
 	/**

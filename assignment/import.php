@@ -1,6 +1,9 @@
 <?php
 // This script grabs the data for the assignment and imports it into the db
-// @ASSIGNMENT 1.1
+
+if( php_sapi_name() == 'cli' ) {
+	die( 'Can only be run as a command link script.' );
+}
 
 require_once __DIR__ . '/src/autoload.php';
 

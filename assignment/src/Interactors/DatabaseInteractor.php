@@ -11,6 +11,8 @@ final class DatabaseInteractor {
 	}
 
 	/**
+	 * Runs the create.sql script
+	 *
 	 * @throws Exception
 	 * @return bool
 	 */
@@ -24,6 +26,8 @@ final class DatabaseInteractor {
 	}
 
 	/**
+	 * Runs the drop.sql script
+	 *
 	 * @throws Exception
 	 * @return bool
 	 */
@@ -37,6 +41,8 @@ final class DatabaseInteractor {
 	}
 
 	/**
+	 * Inserts the given champions into the database
+	 *
 	 * @param Champion[] $champions
 	 *
 	 * @throws Exception
@@ -151,6 +157,8 @@ final class DatabaseInteractor {
 	}
 
 	/**
+	 * Gets all champions in the database
+	 *
 	 * @throws Exception
 	 * @return Champion[]
 	 */
@@ -166,7 +174,6 @@ final class DatabaseInteractor {
 			GROUP BY c.id';
 
 		$championRows = $this->indexRowsById( $this->getRows( $db, $championQuery ) );
-//		$championLocationRows = $this->getRows( $db, 'SELECT * FROM champion_location' );
 		$locationRows = $this->indexRowsById( $this->getRows( $db, 'SELECT * FROM location' ) );
 		$reignRows = $this->indexRowsById( $this->getRows( $db, 'SELECT * FROM reign' ) );
 

@@ -33,7 +33,7 @@ class Location {
 	private $flagUrl;
 
 	/**
-	 * @param null|int $id
+	 * @param int|null $id is is null if not in the database
 	 * @param string $country
 	 * @param string|null $countryLink
 	 * @param string|null $flagUrl

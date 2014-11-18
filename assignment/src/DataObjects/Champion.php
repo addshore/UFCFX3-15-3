@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Class Champion representing a single Champion
+ */
 class Champion {
 
 	/**
@@ -28,7 +31,7 @@ class Champion {
 	private $reigns;
 
 	/**
-	 * @param int $id
+	 * @param int|null $id is is null if not in the database
 	 * @param string $name
 	 * @param Location[] $locations
 	 * @param Reign[] $reigns

@@ -10,6 +10,7 @@ class XmlGenerator implements OutputGenerator {
 	 * @return string
 	 */
 	public function generate( array $champions, array $wikidataItems = array() ) {
+		//TODO use $wikidataItems
 		$xml = new SimpleXMLElement( '<chesschampions/>' );
 		foreach( $champions as $champion ) {
 			$championXml = $xml->addChild( 'champion' );

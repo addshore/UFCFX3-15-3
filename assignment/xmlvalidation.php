@@ -1,6 +1,5 @@
 <?php
 // Validates and shows validation of xml file
-// @ASSIGNMENT 1.2
 
 require_once __DIR__ . '/src/autoload.php';
 
@@ -15,6 +14,7 @@ $dom = new DOMDocument;
 $dom->loadXML( $xml );
 $result = $dom->schemaValidate( __DIR__ . '/xml.xsd' );
 
+// Provide some basic output....
 if( $result ) {
 	echo "Validation was successfull...";
 } else {

@@ -10,6 +10,7 @@ class JsonLdGenerator implements OutputGenerator {
 	 * @return string
 	 */
 	public function generate( array $champions, array $wikidataItems = array() ) {
+		//TODO use $wikidataItems
 		$outArray = array();
 
 		foreach( $champions as $champion ) {

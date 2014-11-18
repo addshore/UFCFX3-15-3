@@ -344,6 +344,12 @@ table, td, th {
 		}
 	}
 
+	/**
+	 * @param string $dataSource identifiers for the datasource
+	 *
+	 * @return string prefix url for the identifier
+	 * @throws Exception if datasource identifier is not known here
+	 */
 	private function getDataLinkPrefix( $dataSource ) {
 		switch ( $dataSource ) {
 			case 'viaf':
