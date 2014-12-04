@@ -5,7 +5,7 @@ if( php_sapi_name() == 'cli' ) {
 	die( 'Can only be run as a command link script.' );
 }
 
-require_once __DIR__ . '/src/autoload.php';
+require_once __DIR__ . '/../src/autoload.php';
 
 $fetcher = new DataFetcher( 'http://www.cems.uwe.ac.uk/~p-chatterjee/2014-15/modules/atwd1/assignment/chess_world_champions.html' );
 $champions = $fetcher->fetch();
