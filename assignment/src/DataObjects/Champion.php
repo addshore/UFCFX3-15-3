@@ -1,5 +1,7 @@
 <?php
 
+require_once( __DIR__ . '/../../viewsource.php' );
+
 /**
  * Class Champion representing a single Champion
  */

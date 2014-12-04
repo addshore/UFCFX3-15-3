@@ -1,5 +1,7 @@
 <?php
 
+require_once( __DIR__ . '/viewsource.php' );
+
 // Load everything
 require_once __DIR__ . '/src/autoload.php';
 

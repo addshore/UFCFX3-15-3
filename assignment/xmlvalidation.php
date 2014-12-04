@@ -1,6 +1,8 @@
 <?php
 // Validates and shows validation of xml file
 
+require_once( __DIR__ . '/viewsource.php' );
+
 require_once __DIR__ . '/src/autoload.php';
 
 $interactor = new DatabaseInteractor();

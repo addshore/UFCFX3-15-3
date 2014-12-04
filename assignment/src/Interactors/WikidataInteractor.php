@@ -1,5 +1,7 @@
 <?php
 
+require_once( __DIR__ . '/../../viewsource.php' );
+
 use DataValues\StringValue;
 use DataValues\TimeValue;
 use Mediawiki\Api\MediawikiApi;
