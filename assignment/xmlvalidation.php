@@ -19,9 +19,15 @@ $dom = new DOMDocument;
 $dom->loadXML( $xml );
 $result = $dom->schemaValidate( __DIR__ . '/xml.xsd' );
 
+echo "<html><head></head><body>";
+
 // Provide some basic output....
 if( $result ) {
-	echo "Validation was successfull...";
+	echo "<p>Validation was <strong>successful</strong>...</p>";
 } else {
-	echo "Validation failed!";
+	echo "<p>Validation <strong>failed</strong>!</p>";
 }
+
+echo "<p>To view the source that decided this click <a href='?viewsource' >here</a></p>";
+
+echo "</body></html>";
