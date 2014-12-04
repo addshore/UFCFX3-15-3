@@ -23,7 +23,13 @@ class JsonLdGenerator implements OutputGenerator {
 			if( array_key_exists( $champion->getEnwikilink(), $extraChampionData ) ) {
 				$extraData = $extraChampionData[$champion->getEnwikilink()];
 				if( !is_null( $extraData->getImageLocation() ) ) {
-					$championArray['image'] = $extraData->getImageLocation();
+					$commonsImageName = $extraData->getImageLocation();
+					$commonsImageNameHash = md5( $commonsImageName );
+					$imageLocation = '//upload.wikimedia.org/wikipedia/commons/' .
+						substr( $commonsImageNameHash, 0, 1 ) . '/' .
+						substr( $commonsImageNameHash, 0, 2 ) . '/' .
+						$commonsImageName;
+					$championArray['image'] = $imageLocation;
 				}
 				if( !is_null( $extraData->getDateOfBrith() ) ) {
 					$championArray['birthDate'] = $extraData->getDateOfBrith();
