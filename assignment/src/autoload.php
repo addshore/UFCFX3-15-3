@@ -1,6 +1,22 @@
 <?php
 
+// View source script
 require_once( __DIR__ . '/../viewsource.php' );
+
+/**
+ * MySQL settings
+ */
+if( file_exists( dirname( dirname( dirname( dirname( __DIR__ ) ) ) ) . '/private_html/mysql.php' ) ) {
+	require_once( dirname( dirname( dirname( dirname( __DIR__ ) ) ) ) . '/private_html/mysql.php' );
+} else {
+	// Default....
+	$mysql = array(
+		'host' => '127.0.0.1',
+		'user' => 'root',
+		'pass' => 'toor',
+		'db' => 'atwd_assignment',
+	);
+}
 
 /**
  * Settings that should be loaded by everything

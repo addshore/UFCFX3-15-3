@@ -8,8 +8,8 @@ final class DatabaseInteractor {
 	 * @return PDO linked to default details
 	 */
 	private function newPDO() {
-		//TODO these details should be somewhere else
-		return new PDO( 'mysql:host=127.0.0.1', 'root', 'toor' );
+		global $mysql;
+		return new PDO( 'mysql:host=' . $mysql['host'], $mysql['user'], $mysql['pass'] );
 	}
 
 	/**
@@ -52,8 +52,8 @@ final class DatabaseInteractor {
 	 */
 	public function insertChampions( $champions ) {
 		$db = $this->newPDO();
-		//TODO database name should not be hard coded
-		$db->query( 'use atwd_assignment' );
+		global $mysql;
+		$db->query( 'use ' . $mysql['db'] );
 
 		$championInsertStatement  = $db->prepare(
 			'INSERT INTO champion ( name, enwikilink ) VALUES (:name, :enwikilink )'
@@ -166,7 +166,8 @@ final class DatabaseInteractor {
 	 */
 	public function getChampions() {
 		$db = $this->newPDO();
-		$db->query( 'use atwd_assignment' );
+		global $mysql;
+		$db->query( 'use ' . $mysql['db'] );
 		$champions = array();
 
 		$championQuery = 'SELECT c.*, GROUP_CONCAT( DISTINCT cl.location_id ) AS locations, GROUP_CONCAT( DISTINCT r.id ) AS reigns

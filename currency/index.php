@@ -28,6 +28,7 @@ call_user_func( function () {
 	 * @var string $from
 	 * @var string $to
 	 */
+	//TODO these settings should come from somewhere else....
 	mysql_connect("localhost", "root", "toor") or die(mysql_error());
 	mysql_select_db("atwd_currency") or die(mysql_error());
 
