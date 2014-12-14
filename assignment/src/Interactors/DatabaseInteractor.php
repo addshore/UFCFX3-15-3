@@ -19,7 +19,7 @@ final class DatabaseInteractor {
 	 * @return bool
 	 */
 	public function create() {
-		$sql = file_get_contents( __DIR__ . '/../sql/create.sql' );
+		$sql = file_get_contents( __DIR__ . '/../../sql/create.sql' );
 		$result = $this->newPDO()->exec( $sql );
 		if( $result === false ) {
 			throw new Exception( $this->newPDO()->errorInfo() );
@@ -34,7 +34,7 @@ final class DatabaseInteractor {
 	 * @return bool
 	 */
 	public function drop() {
-		$sql = file_get_contents( __DIR__ . '/../sql/drop.sql' );
+		$sql = file_get_contents( __DIR__ . '/../../sql/drop.sql' );
 		$result = $this->newPDO()->exec( $sql );
 		if( $result === false ) {
 			throw new Exception( $this->newPDO()->errorInfo() );
