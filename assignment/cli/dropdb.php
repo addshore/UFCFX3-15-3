@@ -3,8 +3,8 @@
 
 require_once( __DIR__ . '/../viewsource.php' );
 
-if( php_sapi_name() == 'cli' ) {
-	die( 'Can only be run as a command link script.' );
+if( php_sapi_name() !== 'cli' ) {
+	die( 'Can only be run as a command line script.' );
 }
 
 require_once __DIR__ . '/../src/autoload.php';
