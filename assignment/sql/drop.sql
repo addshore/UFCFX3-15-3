@@ -2,4 +2,7 @@
 -- Dropping of everything
 -- -----------------------------------------------------
 
-DROP DATABASE IF EXISTS atwd_assignment;
+DROP TABLE IF EXISTS champion;
+DROP TABLE IF EXISTS reign;
+DROP TABLE IF EXISTS location;
+DROP TABLE IF EXISTS champion_location;
