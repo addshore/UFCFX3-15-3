@@ -11,8 +11,6 @@ CREATE TABLE IF NOT EXISTS champion (
   DEFAULT CHARACTER SET = utf8
   COLLATE = utf8_bin;
 
-CREATE UNIQUE INDEX enwikilink_UNIQUE ON champion (enwikilink ASC) ;
-
 CREATE TABLE IF NOT EXISTS reign (
   id INT NOT NULL AUTO_INCREMENT,
   champion_id INT NOT NULL ,
@@ -30,8 +28,6 @@ CREATE TABLE IF NOT EXISTS reign (
 )
   DEFAULT CHARACTER SET = utf8
   COLLATE = utf8_bin;
-
-CREATE INDEX fk_reign_champion1_idx ON reign (champion_id ASC);
 
 CREATE TABLE IF NOT EXISTS location (
   id INT NOT NULL AUTO_INCREMENT,
@@ -62,7 +58,3 @@ CREATE TABLE IF NOT EXISTS champion_location (
 )
   DEFAULT CHARACTER SET = utf8
   COLLATE = utf8_bin;
-
-CREATE INDEX fk_champion_location_champion1_idx ON champion_location (champion_id ASC) ;
-
-CREATE INDEX fk_champion_location_location1_idx ON champion_location (location_id ASC) ;

@@ -54,7 +54,13 @@ class WikidataInteractor {
 		foreach( $enWikiArticles as $enWikiLink => $article ) {
 			$siteLinks[ $enWikiLink ] = new SiteLink( 'enwiki', $article );
 		}
-		$revisions = $this->revisionsGetter->getRevisions( $siteLinks );
+
+		try{
+			$revisions = $this->revisionsGetter->getRevisions( $siteLinks );
+		}
+		catch( \Guzzle\Http\Exception\CurlException $e ) {
+			return array();
+		}
 
 		$statementListMapping = array();
 		foreach( $revisions->toArray() as $revision ) {

@@ -134,7 +134,11 @@ table, td, th {
 		$this->appendDobColToNode( $dom, $tr, $extraData );
 		$this->appendDodColToNode( $dom, $tr, $extraData );
 		$this->appendReignsColToNode( $dom, $tr, $champion );
-		$this->appendDataLinksColToNode( $dom, $tr, $extraData->getDataLinks() );
+		if( $extraData === null ) {
+			$this->appendDataLinksColToNode( $dom, $tr, array() );
+		} else {
+			$this->appendDataLinksColToNode( $dom, $tr, $extraData->getDataLinks() );
+		}
 	}
 
 	/**
