@@ -18,13 +18,14 @@ echo "<div><p>All source files can be found below:</p><ul>\n";
 foreach ( $fileList as $filePath ) {
 
 	if(
-	//Skip all composer stuff
-	strstr( $filePath, DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR ) ||
-	//Skip over . and ..
-	substr( $filePath , -1 ) === '.'
+		//Skip all composer stuff
+		strstr( $filePath, DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR ) ||
+		//Skip over . and ..
+		substr( $filePath , -1 ) === '.'
 	) { continue; }
 
 	//Get rid of the long path
+	$filePath = str_replace( __DIR__ . '/', '', $filePath );
 	$filePath = str_replace( __DIR__ . '\\', '', $filePath );
 
 	echo "<li><a href='$filePath?viewsource'>$filePath</a></li>\n";
