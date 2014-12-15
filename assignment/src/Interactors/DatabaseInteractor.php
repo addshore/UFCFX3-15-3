@@ -24,9 +24,11 @@ final class DatabaseInteractor {
 		$sql = file_get_contents( __DIR__ . '/../../sql/create.sql' );
 		global $mysql;
 		$sql = 'USE ' . $mysql['db'] . ";\n\n" . $sql;
-		$result = $this->newPDO()->exec( $sql );
+		$pdo = $this->newPDO();
+		$result = $pdo->exec( $sql );
 		if( $result === false ) {
-			throw new Exception( $this->newPDO()->errorInfo() );
+			$errorInfo = $pdo->errorInfo();
+			throw new Exception( $errorInfo[2] );
 		}
 		return $result;
 	}
@@ -41,9 +43,11 @@ final class DatabaseInteractor {
 		$sql = file_get_contents( __DIR__ . '/../../sql/drop.sql' );
 		global $mysql;
 		$sql = 'USE ' . $mysql['db'] . ";\n\n" . $sql;
-		$result = $this->newPDO()->exec( $sql );
+		$pdo = $this->newPDO();
+		$result = $pdo->exec( $sql );
 		if( $result === false ) {
-			throw new Exception( $this->newPDO()->errorInfo() );
+			$errorInfo = $pdo->errorInfo();
+			throw new Exception( $errorInfo[2] );
 		}
 		return $result;
 	}
