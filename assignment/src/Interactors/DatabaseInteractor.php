@@ -22,6 +22,8 @@ final class DatabaseInteractor {
 	 */
 	public function create() {
 		$sql = file_get_contents( __DIR__ . '/../../sql/create.sql' );
+		global $mysql;
+		$sql = 'USE ' . $mysql['db'] . ";\n\n" . $sql;
 		$result = $this->newPDO()->exec( $sql );
 		if( $result === false ) {
 			throw new Exception( $this->newPDO()->errorInfo() );
@@ -37,6 +39,8 @@ final class DatabaseInteractor {
 	 */
 	public function drop() {
 		$sql = file_get_contents( __DIR__ . '/../../sql/drop.sql' );
+		global $mysql;
+		$sql = 'USE ' . $mysql['db'] . ";\n\n" . $sql;
 		$result = $this->newPDO()->exec( $sql );
 		if( $result === false ) {
 			throw new Exception( $this->newPDO()->errorInfo() );
