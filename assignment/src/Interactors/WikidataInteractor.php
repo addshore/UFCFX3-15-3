@@ -4,6 +4,7 @@ require_once( __DIR__ . '/../../viewsource.php' );
 
 use DataValues\StringValue;
 use DataValues\TimeValue;
+use Guzzle\Service\Mediawiki\MediawikiApiClient;
 use Mediawiki\Api\MediawikiApi;
 use Wikibase\Api\Service\RevisionsGetter;
 use Wikibase\Api\WikibaseFactory;
@@ -26,7 +27,14 @@ class WikidataInteractor {
 	private $revisionsGetter;
 
 	public function __construct() {
-		$api = new MediawikiApi( "http://www.wikidata.org/w/api.php" );
+		$config = array( 'base_url' => 'http://www.wikidata.org/w/api.php' );
+		if( array_key_exists( 'HTTP_HOST', $_SERVER ) && strstr( $_SERVER['HTTP_HOST'], 'uwe.ac.uk' ) ) {
+			$config['curl.options'] = array(
+				'CURLOPT_PROXY' => 'tcp://proxy.uwe.ac.uk:8080',
+			);
+		}
+		$client = MediawikiApiClient::factory( $config );
+		$api = new MediawikiApi( $client );
 		$services = new WikibaseFactory( $api );
 		$this->revisionsGetter = $services->newRevisionsGetter();
 	}
@@ -59,6 +67,7 @@ class WikidataInteractor {
 			$revisions = $this->revisionsGetter->getRevisions( $siteLinks );
 		}
 		catch( \Guzzle\Http\Exception\CurlException $e ) {
+			// This will happen if run @uwe and the proxy is broken (for example)
 			return array();
 		}
 
