@@ -1,5 +1,8 @@
 <?php
 
+// Always display errors...
+ini_set( 'display_errors', 1 );
+
 // View source script
 require_once( __DIR__ . '/../viewsource.php' );
 
